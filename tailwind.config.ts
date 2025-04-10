@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -24,6 +25,13 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				grocery: {
+					primary: '#4CAF50',   // Fresh green
+					secondary: '#FF8A65', // Soft orange for CTAs
+					light: '#E8F5E9',     // Light green background
+					dark: '#2E7D32',      // Darker green
+					accent: '#FF5722',    // Bright accent for highlights
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -84,11 +92,33 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'slide-out-left': {
+					from: { 
+						transform: 'translateX(0) rotate(0)',
+						opacity: '1' 
+					},
+					to: { 
+						transform: 'translateX(-30%) rotate(-10deg)',
+						opacity: '0' 
+					}
+				},
+				'slide-out-right': {
+					from: { 
+						transform: 'translateX(0) rotate(0)',
+						opacity: '1' 
+					},
+					to: { 
+						transform: 'translateX(30%) rotate(10deg)',
+						opacity: '0' 
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'slide-out-left': 'slide-out-left 0.5s ease-out forwards',
+				'slide-out-right': 'slide-out-right 0.5s ease-out forwards'
 			}
 		}
 	},
