@@ -1,4 +1,3 @@
-
 export interface Product {
   id: number;
   name: string;
@@ -14,13 +13,13 @@ export interface Product {
 export const products: Product[] = [
   {
     id: 1,
-    name: "Organic Avocado",
-    category: "Produce",
-    price: 1.99,
-    image: "https://images.unsplash.com/photo-1551460188-2f48af84afd4?q=80&w=800",
-    description: "Fresh organic avocados. Rich in healthy fats and perfect for guacamole.",
-    weight: "each",
-    organic: true
+    name: "Azúcar LEDESMA Clásica",
+    category: "Abarrotes",
+    price: 1699,
+    image: "/lovable-uploads/f0daa4be-f1fe-48c7-b929-097629e0e748.png",
+    description: "Azúcar blanca clásica de primera calidad",
+    weight: "kg",
+    discount: 30
   },
   {
     id: 2,

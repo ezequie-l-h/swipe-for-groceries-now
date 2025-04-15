@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type Product } from "@/data/products";
 import { cn } from "@/lib/utils";
-import { ThumbsUp, ThumbsDown, Heart } from "lucide-react";
+import { X, ShoppingCart } from "lucide-react";
 
 type SwipeDirection = "left" | "right" | null;
 
@@ -91,14 +90,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onSwipe, isActive })
     }
   };
   
-  // Calculate rotation based on drag offset
-  const rotation = dragOffset.x * 0.1; // Adjust the rotation intensity
-  
-  // Style for the card based on drag position
   const cardStyle = {
     transform: isAnimating 
       ? "" 
-      : `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${rotation}deg)`,
+      : `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`,
     transition: dragStart ? "none" : "transform 0.3s ease",
     zIndex: isActive ? 10 : 1,
   };
@@ -108,16 +103,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onSwipe, isActive })
     
     setIsAnimating(true);
     setSwipeDirection(direction);
-    
-    // Trigger the swipe animation and callback
     onSwipe(direction, product.id);
     
-    // Reset after animation completes
     setTimeout(() => {
       setDragOffset({ x: 0, y: 0 });
       setSwipeDirection(null);
       setIsAnimating(false);
-    }, 500); // Match animation duration
+    }, 500);
   };
   
   const cardClasses = cn(
@@ -127,6 +119,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onSwipe, isActive })
       "animate-slide-out-left": isAnimating && swipeDirection === "left",
     }
   );
+
+  const originalPrice = product.price / (1 - (product.discount || 0) / 100);
 
   return (
     <Card 
@@ -140,69 +134,66 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onSwipe, isActive })
       onTouchMove={handleDragMove}
       onTouchEnd={handleDragEnd}
     >
-      {/* Product Badge Overlays */}
-      {swipeDirection === "right" && (
-        <div className="absolute top-10 right-4 z-30 rotate-12 bg-green-500 text-white px-6 py-2 rounded-full font-bold text-lg shadow-md">
-          LIKE
-        </div>
-      )}
-      {swipeDirection === "left" && (
-        <div className="absolute top-10 left-4 z-30 -rotate-12 bg-red-500 text-white px-6 py-2 rounded-full font-bold text-lg shadow-md">
-          PASS
-        </div>
-      )}
-      
-      {/* Product Image */}
-      <div className="relative h-64 bg-gray-100">
+      {/* Product Image Section */}
+      <div className="relative h-64 bg-white flex items-center justify-center p-4">
         <img 
           src={product.image} 
           alt={product.name} 
-          className="w-full h-full object-cover"
+          className="max-h-full object-contain"
         />
-        {product.organic && (
-          <Badge className="absolute top-2 left-2 bg-grocery-primary">
-            Organic
-          </Badge>
-        )}
         {product.discount && (
-          <Badge className="absolute top-2 right-2 bg-grocery-accent">
-            {product.discount}% OFF
+          <Badge className="absolute top-2 right-2 bg-yellow-400 text-black font-bold text-lg px-4 py-2 rounded-full">
+            -{product.discount}%
           </Badge>
         )}
       </div>
       
-      {/* Product Info */}
-      <div className="p-5">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-xl font-bold">{product.name}</h3>
-          <div className="text-lg font-bold text-grocery-primary">
-            ${product.price.toFixed(2)}
-            {product.weight && <span className="text-sm text-gray-500 ml-1">/{product.weight}</span>}
+      {/* Product Info Section */}
+      <div className="p-5 bg-white">
+        {/* Price Section */}
+        <div className="flex items-baseline gap-2 mb-2">
+          <div className="flex items-center gap-1">
+            <span className="text-yellow-400 text-2xl">$</span>
+            <span className="text-3xl font-bold">{product.price.toLocaleString()}</span>
           </div>
+          {product.discount && (
+            <span className="text-gray-400 line-through text-lg">
+              ${originalPrice.toLocaleString()}
+            </span>
+          )}
         </div>
         
-        <p className="text-gray-600 mb-3">{product.description}</p>
-        
-        <div className="flex items-center justify-between mt-4">
-          <Badge variant="outline" className="bg-gray-100">
-            {product.category}
-          </Badge>
-          
-          {/* Swipe Action Buttons */}
-          <div className="flex gap-3">
-            <button 
-              onClick={() => handleSwipeButtonClick("left")}
-              className="p-2 rounded-full bg-red-100 hover:bg-red-200 transition-colors"
-            >
-              <ThumbsDown className="h-6 w-6 text-red-500" />
-            </button>
-            <button 
-              onClick={() => handleSwipeButtonClick("right")}
-              className="p-2 rounded-full bg-green-100 hover:bg-green-200 transition-colors"
-            >
-              <ThumbsUp className="h-6 w-6 text-green-500" />
-            </button>
+        {/* Savings */}
+        {product.discount && (
+          <div className="text-red-500 text-lg mb-2">
+            -{product.discount}% Ahorrás ${((originalPrice - product.price)).toLocaleString()}
           </div>
+        )}
+        
+        {/* Unit Price */}
+        {product.weight && (
+          <div className="text-gray-600 text-lg mb-3">/{product.weight}</div>
+        )}
+        
+        {/* Product Name */}
+        <h3 className="text-xl font-bold mb-4">{product.name}</h3>
+        
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <button 
+            onClick={() => handleSwipeButtonClick("left")}
+            className="flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition-colors"
+          >
+            <X className="h-5 w-5" />
+            <span>No me interesa</span>
+          </button>
+          <button 
+            onClick={() => handleSwipeButtonClick("right")}
+            className="flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-green-100 text-green-500 hover:bg-green-200 transition-colors"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            <span>Agregar</span>
+          </button>
         </div>
       </div>
     </Card>
