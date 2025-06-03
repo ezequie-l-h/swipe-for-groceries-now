@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import ProductCard from '@/components/ProductCard';
@@ -64,7 +63,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header likedCount={likedProducts.length} />
+      <Header likedCount={likedProducts.length} likedProducts={likedProducts} />
       
       <div className={`flex flex-1 ${isMobile ? 'flex-col' : 'flex-row'} p-4 gap-6`}>
         <div className={`${isMobile ? 'h-[60vh]' : 'flex-1'} flex items-center justify-center`}>
