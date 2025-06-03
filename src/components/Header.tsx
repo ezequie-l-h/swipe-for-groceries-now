@@ -3,6 +3,7 @@ import React from 'react';
 import { ShoppingCart, BadgePercent, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
 import { Product } from '@/data/products';
 
@@ -23,6 +24,49 @@ const Header: React.FC<HeaderProps> = ({ likedCount, likedProducts }) => {
     }
     return total;
   }, 0);
+  
+  // Determine tier and colors based on savings amount
+  const getTierInfo = (amount: number) => {
+    if (amount >= 15000) {
+      return {
+        tier: 'Diamond',
+        colors: 'from-blue-400 to-cyan-500',
+        bgColors: 'from-blue-500 to-cyan-600',
+        progress: 100,
+        nextTier: null,
+        progressColor: 'bg-cyan-400'
+      };
+    } else if (amount >= 10000) {
+      return {
+        tier: 'Gold',
+        colors: 'from-yellow-400 to-amber-500',
+        bgColors: 'from-yellow-500 to-amber-600',
+        progress: ((amount - 10000) / 5000) * 100,
+        nextTier: 15000,
+        progressColor: 'bg-amber-400'
+      };
+    } else if (amount >= 5000) {
+      return {
+        tier: 'Silver',
+        colors: 'from-gray-300 to-slate-400',
+        bgColors: 'from-gray-400 to-slate-500',
+        progress: ((amount - 5000) / 5000) * 100,
+        nextTier: 10000,
+        progressColor: 'bg-slate-400'
+      };
+    } else {
+      return {
+        tier: 'Bronze',
+        colors: 'from-orange-400 to-amber-600',
+        bgColors: 'from-orange-500 to-amber-700',
+        progress: (amount / 5000) * 100,
+        nextTier: 5000,
+        progressColor: 'bg-amber-600'
+      };
+    }
+  };
+  
+  const tierInfo = getTierInfo(totalSavings);
   
   const handleCheckout = () => {
     toast({
@@ -46,20 +90,40 @@ const Header: React.FC<HeaderProps> = ({ likedCount, likedProducts }) => {
         {totalSavings > 0 && (
           <div className="relative">
             {/* Pulsing background effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full opacity-20 animate-pulse"></div>
+            <div className={`absolute inset-0 bg-gradient-to-r ${tierInfo.colors} rounded-lg opacity-20 animate-pulse`}></div>
             
             {/* Main savings display */}
-            <div className="relative bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300">
-              <div className="flex items-center gap-2">
+            <div className={`relative bg-gradient-to-r ${tierInfo.bgColors} text-white px-4 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 min-w-[200px]`}>
+              <div className="flex items-center gap-3">
                 <div className="relative">
-                  <TrendingUp className="h-5 w-5 animate-bounce" />
+                  <TrendingUp className="h-6 w-6 animate-bounce" />
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium opacity-90">You Saved</span>
-                  <span className="text-lg font-bold leading-none">
-                    ${totalSavings.toFixed(2)}
-                  </span>
+                <div className="flex flex-col flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium opacity-90">{tierInfo.tier} Tier</span>
+                    <span className="text-xs font-medium opacity-90">
+                      ${totalSavings.toFixed(2)}
+                    </span>
+                  </div>
+                  
+                  {/* Progress bar */}
+                  <div className="mt-1 mb-1">
+                    <div className="w-full bg-black/20 rounded-full h-2">
+                      <div 
+                        className={`h-2 ${tierInfo.progressColor} rounded-full transition-all duration-500 relative overflow-hidden`}
+                        style={{ width: `${Math.min(tierInfo.progress, 100)}%` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {tierInfo.nextTier && (
+                    <span className="text-xs opacity-75">
+                      ${(tierInfo.nextTier - totalSavings).toFixed(2)} to next tier
+                    </span>
+                  )}
                 </div>
               </div>
               
