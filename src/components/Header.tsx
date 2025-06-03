@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { ShoppingCart, BadgePercent } from 'lucide-react';
+import { ShoppingCart, BadgePercent, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { Product } from '@/data/products';
 
@@ -43,11 +44,42 @@ const Header: React.FC<HeaderProps> = ({ likedCount, likedProducts }) => {
       
       <div className="flex items-center gap-4">
         {totalSavings > 0 && (
-          <div className="flex items-center gap-2 text-green-600">
-            <BadgePercent className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              Savings: ${totalSavings.toLocaleString()}
-            </span>
+          <div className="relative">
+            {/* Pulsing background effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full opacity-20 animate-pulse"></div>
+            
+            {/* Main savings display */}
+            <div className="relative bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <TrendingUp className="h-5 w-5 animate-bounce" />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium opacity-90">You Saved</span>
+                  <span className="text-lg font-bold leading-none">
+                    ${totalSavings.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Sparkle effects */}
+              <div className="absolute -top-1 -right-1 w-3 h-3">
+                <div className="w-1 h-1 bg-yellow-300 rounded-full absolute top-0 right-0 animate-ping"></div>
+                <div className="w-1 h-1 bg-yellow-300 rounded-full absolute top-1 right-2 animate-ping delay-75"></div>
+              </div>
+            </div>
+            
+            {/* Additional badge for percentage */}
+            {likedProducts.some(p => p.discount) && (
+              <Badge 
+                variant="secondary" 
+                className="absolute -bottom-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 animate-bounce delay-300"
+              >
+                <BadgePercent className="h-3 w-3 mr-1" />
+                UP TO {Math.max(...likedProducts.filter(p => p.discount).map(p => p.discount!))}% OFF
+              </Badge>
+            )}
           </div>
         )}
         
@@ -55,10 +87,15 @@ const Header: React.FC<HeaderProps> = ({ likedCount, likedProducts }) => {
           onClick={handleCheckout}
           disabled={likedCount === 0}
           variant="outline" 
-          className="flex items-center gap-2 border-grocery-primary text-grocery-primary hover:bg-grocery-light"
+          className="flex items-center gap-2 border-grocery-primary text-grocery-primary hover:bg-grocery-light relative overflow-hidden group"
         >
-          <ShoppingCart className="h-4 w-4" />
-          <span>{likedCount}</span>
+          {/* Shimmer effect on hover */}
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700"></div>
+          <ShoppingCart className="h-4 w-4 relative z-10" />
+          <span className="relative z-10">{likedCount}</span>
+          {likedCount > 0 && (
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+          )}
         </Button>
       </div>
     </header>
